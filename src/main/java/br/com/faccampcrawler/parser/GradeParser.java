@@ -28,7 +28,6 @@ class GradeParser {
             } else {
                 if (element.children().size() != 0) {
                     Grade grade = new Grade();
-                    //TODO: Tratar datas como Date, de fato
                     if (!dates.isEmpty() && !grades.isEmpty()) {
                         grade.setDate(ParserUtil.stringToDate(ParserUtil.removeWhitespace(dates.get(index).ownText())));
                         grade.setValue(ParserUtil.removeWhitespace(grades.get(index).ownText()));

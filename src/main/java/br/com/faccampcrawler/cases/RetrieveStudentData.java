@@ -18,7 +18,7 @@ public class RetrieveStudentData {
         this.parser = parser;
     }
 
-    public Student retrieve(String ra, String password) {
+    public Student retrieve(String ra, String password) throws InvalidLoginException {
         Student student = new Student();
         Document index = crawler.executeLogin(ra, password);
 
@@ -30,7 +30,10 @@ public class RetrieveStudentData {
             if (subjectsPage != null && gradesPage != null && edpGradesPage != null) {
                 student = parser.parseStudentData(subjectsPage, gradesPage, edpGradesPage);
             }
+        } else {
+            throw new InvalidLoginException("Could not validate login for user with ra: " + ra);
         }
+
         return student;
     }
 }

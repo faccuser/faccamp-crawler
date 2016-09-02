@@ -1,5 +1,6 @@
 package br.com.faccampcrawler.controller;
 
+import br.com.faccampcrawler.cases.InvalidLoginException;
 import br.com.faccampcrawler.cases.RetrieveStudentData;
 import br.com.faccampcrawler.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,11 @@ public class StudentController extends AbstractController {
 
         try {
             Student student = retrieveStudentData.retrieve(ra, password);
-            if (student != null) {
-                return buildSuccessResponse(student);
-            }  else {
-                return buildFailResponse("Could not retrieve student data.");
-            }
+            return buildSuccessResponse(student);
+        } catch (InvalidLoginException e) {
+            return buildFailResponse("User credentials are not valid. " + e.getMessage());
         } catch (Exception e) {
-            return buildFailResponse("Something went wrong.");
+            return buildErrorResponse("Something wen wrong. " + e.getMessage());
         }
     }
 }
