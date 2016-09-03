@@ -28,6 +28,7 @@ class SubjectParser {
     }
 
     List<Subject> retrieveSubjects(Document page) {
+        List<String> subjectCodes = new ArrayList<>();
         List<String> subjectNames = new ArrayList<>();
         List<String> absences = new ArrayList<>();
         List<String> partialAverages = new ArrayList<>();
@@ -42,6 +43,8 @@ class SubjectParser {
             if (!element.hasAttr("width")) {
                 if (elementText.length() > 4 && !elementText.equals("Não Informado")) {
                     subjectNames.add(elementText);
+                } else if (elementText.length() == 4) {
+                    subjectCodes.add(elementText);
                 }
             } else {
                 if (ParserUtil.removeWhitespace(element.previousElementSibling().ownText()).matches("\\b\\d{2}\\b") && !element.nextElementSibling().hasAttr("width")) {
@@ -53,15 +56,14 @@ class SubjectParser {
             partialAverages.add(ParserUtil.removeWhitespace(partialAveragesElements.get(i).ownText()));
             finalAverages.add(ParserUtil.removeWhitespace(finalAveragesElements.get(i).ownText()));
         }
-        return buildSubjectList(subjectNames, absences, partialAverages, finalAverages);
+        return buildSubjectList(subjectCodes, subjectNames, absences, partialAverages, finalAverages);
     }
 
-    private List<Subject> buildSubjectList(List<String> subjectNames, List<String> absences, List<String> partialAverages, List<String> finalAverages) {
+    private List<Subject> buildSubjectList(List<String> subjectCodes, List<String> subjectNames, List<String> absences, List<String> partialAverages, List<String> finalAverages) {
         List<Subject> subjectList = new ArrayList<>();
 
         for (int i = 0; i < subjectNames.size(); i++) {
-            Subject subject = new Subject();
-            subject.setName(subjectNames.get(i));
+            Subject subject = new Subject(subjectCodes.get(i), subjectNames.get(i));
             subject.setAbsences(absences.get(i));
             subject.setPartialAverage(partialAverages.get(i));
             subject.setFinalAverage(finalAverages.get(i));

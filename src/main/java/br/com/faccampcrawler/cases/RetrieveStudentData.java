@@ -7,6 +7,11 @@ import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 @Component
 public class RetrieveStudentData {
     private StudentCrawler crawler;
@@ -23,17 +28,30 @@ public class RetrieveStudentData {
         Document index = crawler.executeLogin(ra, password);
 
         if (parser.validateLogin(index)) {
-            Document subjectsPage = crawler.retrieveSubjectsPage(crawler.getCookies());
-            Document gradesPage = crawler.retrieveGradesPage(crawler.getCookies());
-            Document edpGradesPage = crawler.retrieveEDPGradesPage(crawler.getCookies());
+            try {
+                ExecutorService executor = Executors.newSingleThreadExecutor();
 
-            if (subjectsPage != null && gradesPage != null && edpGradesPage != null) {
-                student = parser.parseStudentData(subjectsPage, gradesPage, edpGradesPage);
+                Future<Document> futureSubjectsPage = executor.submit(() -> crawler.retrieveSubjectsPage(crawler.getCookies()));
+                Future<Document> futureGradesPage = executor.submit(() -> crawler.retrieveGradesPage(crawler.getCookies()));
+                Future<Document> futureEdpGradesPage = executor.submit(() -> crawler.retrieveEDPGradesPage(crawler.getCookies()));
+
+                executor.shutdown();
+                executor.awaitTermination(2, TimeUnit.MINUTES);
+
+                Document subjectsPage = futureSubjectsPage.get();
+                Document gradesPage = futureGradesPage.get();
+                Document edpGradesPage = futureEdpGradesPage.get();
+
+                if (subjectsPage != null && gradesPage != null && edpGradesPage != null)
+                    student = parser.parseStudentData(subjectsPage, gradesPage, edpGradesPage);
+                else
+                    throw new InvalidLoginException("Could not validate login for user with ra: " + ra);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-        } else {
-            throw new InvalidLoginException("Could not validate login for user with ra: " + ra);
         }
-
         return student;
     }
 }

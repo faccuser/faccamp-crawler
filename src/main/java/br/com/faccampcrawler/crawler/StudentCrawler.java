@@ -71,7 +71,7 @@ public class StudentCrawler {
         }
     }
 
-    public Map<String, String> getCookies() {
+    public synchronized Map<String, String> getCookies() {
         return cookies;
     }
 }

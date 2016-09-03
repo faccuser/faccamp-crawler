@@ -25,7 +25,7 @@ public class StudentController extends AbstractController {
         } catch (InvalidLoginException e) {
             return buildFailResponse("User credentials are not valid. " + e.getMessage());
         } catch (Exception e) {
-            return buildErrorResponse("Something wen wrong. " + e.getMessage());
+            return buildErrorResponse("Something went wrong. " + e.getMessage());
         }
     }
 }
