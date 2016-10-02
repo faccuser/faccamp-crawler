@@ -1,7 +1,7 @@
 package br.com.faccampcrawler.parser;
 
 import br.com.faccampcrawler.model.Grade;
-import br.com.faccampcrawler.parser.util.ParserUtil;
+import br.com.faccampcrawler.parser.util.ParsingUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -22,15 +22,15 @@ class GradeParser {
         Elements grades = document.select("td.GradeNotas table tbody tr td.GradeNotasDestaque");
 
         for (Element element : columns) {
-            if (ParserUtil.removeWhitespace(element.ownText()).matches("\\b\\w{4}\\b") && columns.first() != element) {
+            if (ParsingUtils.removeWhitespace(element.ownText()).matches("\\b\\w{4}\\b") && columns.first() != element) {
                 responseList.add(gradesList);
                 gradesList = new ArrayList<>();
             } else {
                 if (element.children().size() != 0) {
                     Grade grade = new Grade();
                     if (!dates.isEmpty() && !grades.isEmpty()) {
-                        grade.setDate(ParserUtil.stringToDate(ParserUtil.removeWhitespace(dates.get(index).ownText())));
-                        grade.setValue(ParserUtil.removeWhitespace(grades.get(index).ownText()));
+                        grade.setDate(ParsingUtils.removeWhitespace(dates.get(index).ownText()));
+                        grade.setValue(ParsingUtils.removeWhitespace(grades.get(index).ownText()));
                         gradesList.add(grade);
                         index++;
                     }

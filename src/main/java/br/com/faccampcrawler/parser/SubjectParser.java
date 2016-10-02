@@ -2,7 +2,7 @@ package br.com.faccampcrawler.parser;
 
 import br.com.faccampcrawler.model.Student;
 import br.com.faccampcrawler.model.Subject;
-import br.com.faccampcrawler.parser.util.ParserUtil;
+import br.com.faccampcrawler.parser.util.ParsingUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -39,7 +39,7 @@ class SubjectParser {
         Elements finalAveragesElements = page.select("td.ColunaMF");
 
         for (Element element : colunaParElements) {
-            String elementText = ParserUtil.removeWhitespace(element.ownText());
+            String elementText = ParsingUtils.removeWhitespace(element.ownText());
             if (!element.hasAttr("width")) {
                 if (elementText.length() > 4 && !elementText.equals("Não Informado")) {
                     subjectNames.add(elementText);
@@ -47,14 +47,14 @@ class SubjectParser {
                     subjectCodes.add(elementText);
                 }
             } else {
-                if (ParserUtil.removeWhitespace(element.previousElementSibling().ownText()).matches("\\b\\d{2}\\b") && !element.nextElementSibling().hasAttr("width")) {
+                if (ParsingUtils.removeWhitespace(element.previousElementSibling().ownText()).matches("\\b\\d{2}\\b") && !element.nextElementSibling().hasAttr("width")) {
                     absences.add(elementText);
                 }
             }
         }
         for (int i = 0; i < finalAveragesElements.size(); i++) {
-            partialAverages.add(ParserUtil.removeWhitespace(partialAveragesElements.get(i).ownText()));
-            finalAverages.add(ParserUtil.removeWhitespace(finalAveragesElements.get(i).ownText()));
+            partialAverages.add(ParsingUtils.removeWhitespace(partialAveragesElements.get(i).ownText()));
+            finalAverages.add(ParsingUtils.removeWhitespace(finalAveragesElements.get(i).ownText()));
         }
         return buildSubjectList(subjectCodes, subjectNames, absences, partialAverages, finalAverages);
     }
